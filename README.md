@@ -183,6 +183,9 @@ Here is how it looks like (this is a link to YouTube):
 
 [![Sid Meier's Civilization Arbitrary Code Execution](http://img.youtube.com/vi/o3X37lpCJOo/0.jpg)](https://www.youtube.com/watch?v=o3X37lpCJOo)
 
+The demo itself looks like this:  
+![Demo](demo.png)
+
 ## Build and run
 
 ### Prerequisites
