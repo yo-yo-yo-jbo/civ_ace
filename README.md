@@ -1,5 +1,5 @@
 # Civilization 1 Arbitrary Code Execution
-Sid Meier's Civilization (1991) is one of my favorite old-timey games.  
+[Sid Meier's Civilization (1991)](https://en.wikipedia.org/wiki/Civilization_(video_game)) is one of my favorite old-timey games.  
 It is one of the first strategy games I have ever played, and I literally spent hours designing roads between cities, researching technology, building world wonders and so on.  
 As I grew up (mind you, I was but a mere child!) I realized the game's savefiles could be edited, and I have a vivid memory of trying to edit savefiles and having weird consequences.  
 After more than 30 years, I've decided to take a day and see if I can get arbitrary code execution in the game, and I'd like to share that with you!
@@ -180,7 +180,7 @@ You can feed that number to my exploit implementation using the `--dgroup` comma
 My full exploit lives in this repository as [civ1_map_exploit.py](civ1_map_exploit.py) - it creates a trojanized `CIVIL#.MAP` file which can be loaded.  
 For fun, I've created a "retrowave" demo, like the good old days, which you can find under [demo.asm](demo.asm).  
 Here is how it looks like:
-
+[![Sid Meier's Civilization Arbitrary Code Execution](http://img.youtube.com/vi/o3X37lpCJOo/0.jpg)](https://www.youtube.com/watch?v=o3X37lpCJOo)
 
 ## Build and run
 
