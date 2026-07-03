@@ -1,4 +1,4 @@
-# Civilization 1 Arbitrary Code Execution
+# Sid Meier's Civilization Arbitrary Code Execution
 [Sid Meier's Civilization (1991)](https://en.wikipedia.org/wiki/Civilization_(video_game)) is one of my favorite old-timey games.  
 It is one of the first strategy games I have ever played, and I literally spent hours designing roads between cities, researching technology, building world wonders and so on.  
 As I grew up (mind you, I was but a mere child!) I realized the game's savefiles could be edited, and I have a vivid memory of trying to edit savefiles and having weird consequences.  
