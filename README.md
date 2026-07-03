@@ -264,7 +264,7 @@ As you can see:
 1. Gandhi's `Mood` is `-1` and not `1`. The value `-1` is the *friendliest* value in the whole game - the exact opposite of the story. I further examined the table and also discovered Hammurabi and Lincoln have the same `Mood` values.
 2. `Mood` is stored as `ff ff`, which, for a "minimum" value, only makes sense as a **signed** `-1`. If this were an unsigned byte (as the legend requires), there would be nothing to underflow.
 
-### Proving `Mood` is a signed integer
+### Proving Mood is a signed integer
 The stored bytes are suggestive, but we can actually see how the game uses the field.  
 This is the routine that prints a leader's disposition:
 
