@@ -60,7 +60,7 @@ One more thing I was not familiar with is the concept of `DGROUP`, which will be
 In 16-bit x86, a segment register only reaches a 64 KB window.  
 `DGROUP` ("data group") is the single segment the C compiler puts all near data in - initialized globals, `BSS`, constants, and (in this game's memory model) the **stack**.  
 The runtime sets `DS=DGROUP`, so every global is just `[DS:offset]`.  
-Two things matter for us: because `SS=DS= DGROUP`, the buffer, the globals, and the stack all share one segment (so an overflow walks right through them).  
+Two things matter for us: because `SS=DS=DGROUP`, the buffer, the globals, and the stack all share one segment (so an overflow walks right through them).  
 While **offsets** inside `DGROUP` are fixed, the DGROUP **segment value** is `load_base + constant`, so it shifts with the DOS memory layout.  
 We will discuss the implications of that during the exploitation section.
 
@@ -191,7 +191,7 @@ The demo itself looks like this:
 ### Prerequisites
 * [nasm](https://www.nasm.us) (assembler)
 * `python3`
-* DOSBox or dosbox‑x, plus the game files (`ORIGINAL.EXE`/`CIV.EXE`, and a valid `CIVIL#.SVE` for the slot you'll load).
+* DOSBox or DOSBox-x, plus the game files (`ORIGINAL.EXE`/`CIV.EXE`, and a valid `CIVIL#.SVE` for the slot you'll load).
 
 ### Assemble the payload
 ```sh
