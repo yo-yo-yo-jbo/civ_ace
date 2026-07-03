@@ -228,6 +228,72 @@ python3 civ1_map_exploit.py demo.bin CIVIL0.MAP --dgroup 0xXXXX
 ### Fire it
 Put the crafted `CIVIL0.MAP` next to a **valid** `CIVIL0.SVE`, start the game, and **load slot 0** (that's the first saved game).  
 
+## Bonus - Nuclear Gandhi
+There is a well known urban legend about an alleged bug in the original game - the legend of [Nuclear Gandhi](https://en.wikipedia.org/wiki/Nuclear_Gandhi).  
+The alleged bug states that each leader has an "aggression" score, and Gandhi starting with the lowest score of 1.  
+Changing the government type to democracy decreases the aggression score by 2, and thus - Gandhi gets a negative 1.  
+The bug further states that there is an [integer overflow](https://en.wikipedia.org/wiki/Integer_overflow) since the score was saved as an unsigned byte, resulting in a score of 255 (extremely aggressive).  
+Since at that point of the game nuclear research is supposedly done - Gandhi would use nuclear weapons and attack everyone around him.  
+While Sid Meier himself mentioned the bug is just an urban legend - I've done enough reverse-engineering to prove or disprove it.
+
+### The leader format
+Each leader in the game is a fixed **58-byte record**. As before, I used `OpenCivOne` and got the field names, and then confirmed the layout byte-for-byte inside `CIV.EXE`:
+
+| Offset | Size | Field       | Meaning                                                  |
+| ------ | ---- | ----------- | -------------------------------------------------------- |
+| `0x00` | 32   | Leader name | NUL-terminated string, zero-padded                       |
+| `0x20` | 16   | Nationality | NUL-terminated string, zero-padded                       |
+| `0x30` | 2    | **Mood**    | `-1` = Friendly, `0` = Neutral, `+1` = Aggressive        |
+| `0x32` | 2    | Policy      | `-1` = Perfectionist, `0` = Neutral, `+1` = Expansionist |
+| `0x34` | 2    | Ideology    | `-1` = Militaristic, `0` = Neutral, `+1` = Civilized     |
+| `0x36` | 2    | Short tune  | (music)                                                  |
+| `0x38` | 2    | Long tune   | (music)                                                  |
+
+The "aggression" from the legend is the `Mood` field. Here is Gandhi's record, dumped straight out of the unpacked `CIV.EXE`:
+
+```
+4d 2e 47 61 6e 64 68 69 00 ... 00   ; "M.Gandhi"  (32 bytes, zero-padded)
+49 6e 64 69 61 6e 00 ... 00         ; "Indian"    (16 bytes, zero-padded)
+ff ff                               ; Mood = -1
+ff ff                               ; Policy = -1
+00 00                               ; Ideology
+1f 00 11 00
+```
+
+As you can see:
+1. Gandhi's `Mood` is `-1` and not `1`. The value `-1` is the *friendliest* value in the whole game - the exact opposite of the story. I further examined the table and also discovered Hammurabi and Lincoln have the same `Mood` values.
+2. `Mood` is stored as `ff ff`, which, for a "minimum" value, only makes sense as a **signed** `-1`. If this were an unsigned byte (as the legend requires), there would be nothing to underflow.
+
+### Proving `Mood` is a signed integer
+The stored bytes are suggestive, but we can actually see how the game uses the field.  
+This is the routine that prints a leader's disposition:
+
+```asm
+mov  ax, 0x3a                    ; 0x3A = 58 = size of one leader record
+imul word ptr [si-0x18ec]        ; ax = NationalityID * 58   (signed multiply, index into the table)
+mov  bx, ax
+cmp  word ptr [bx+0x1512], 1     ; Mood == 1 ?   -> print "Aggressive"
+jne  ...
+...
+cmp  word ptr [bx+0x1512], -1    ; Mood == -1 ?  -> print "Friendly"
+jne  ...
+```
+
+`0x1512` is `0x14E2` (the leader table base) plus `0x30` (the `Mood` offset), with a stride of `58` - exactly our record layout.  
+Note how the game simply uses `cmp` operations with `jne` - against both `1` and `-1`, rather than doing any signed comparisons.
+
+### There is no "minus 2 for democracy"
+For completeness, the mechanism the legend needs simply isn't there.  
+The **only** place the game ever *writes* `Mood` is a periodic re-roll (as seen in `OpenCivOne`):
+
+```csharp
+Nations[i].Mood = RNG.Next(3) - 1;   // re-randomized to -1 / 0 / +1
+```
+
+Every other reference is a read feeding an equality test (`== 1`, `== -1`) to pick a mood string or steer AI attitude.  
+No government path decrements it, there is no accumulating aggression counter, and there is nothing to overflow.
+At this point, I really conclude the legend of Nuclear Gandhi is a myth.
+
 ## Summary
 This was a very fun weekend project for me, similar to what I've previously done with [Dangerous Dave](https://github.com/yo-yo-yo-jbo/dangerous_dave).  
 I might start working more seriously as a hobby on modding or hacking old DOS games, these are way more fun for me these days since a lot of things are propriatery.
