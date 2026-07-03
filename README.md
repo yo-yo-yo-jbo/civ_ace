@@ -179,7 +179,8 @@ You can feed that number to my exploit implementation using the `--dgroup` comma
 ### Full exploit
 My full exploit lives in this repository as [civ1_map_exploit.py](civ1_map_exploit.py) - it creates a trojanized `CIVIL#.MAP` file which can be loaded.  
 For fun, I've created a "retrowave" demo, like the good old days, which you can find under [demo.asm](demo.asm).  
-Here is how it looks like:
+Here is how it looks like (this is a link to YouTube):
+
 [![Sid Meier's Civilization Arbitrary Code Execution](http://img.youtube.com/vi/o3X37lpCJOo/0.jpg)](https://www.youtube.com/watch?v=o3X37lpCJOo)
 
 ## Build and run
