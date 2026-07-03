@@ -53,12 +53,12 @@ Rather than reimplement EXEPACK, the cleanest unpack is to **let the stub do the
 
 That dump is a faithful snapshot of the running program: correct code, correct data, correct addresses. Two things are worth noting for later:
 * The **data segment (DGROUP)** lands at a fixed paragraph offset from the load base. In the emulation (load base `0x1000`) DGROUP is `0x3A1B`; at runtime it is `load_base + 0x2A1B`.
-* *Civilization* uses **DOS overlays** - chunks of code (including the save‑game loader) that are **not** part of the EXEPACK image at all. They live **raw** in ~126 KB appended after the MZ image and are paged-in at runtime. That's why the loader is invisible in the unpacked base image but perfectly readable in the file's tail.
+* *Civilization* uses **DOS overlays** - chunks of code (including the save‑game loader) that are **not** part of the EXEPACK image at all. They live **raw** in 126 KB appended after the MZ image and are paged-in at runtime. That's why the loader is invisible in the unpacked base image but perfectly readable in the file's tail.
 
 ### DGROUP
 One more thing I was not familiar with is the concept of `DGROUP`, which will be critical to understanding this exploit.  
 In 16-bit x86, a segment register only reaches a 64 KB window.  
-`DGROUP` ("data group") is the single segment the C compiler puts all near data in — initialized globals, `BSS`, constants, and (in this game's memory model) the **stack**.  
+`DGROUP` ("data group") is the single segment the C compiler puts all near data in - initialized globals, `BSS`, constants, and (in this game's memory model) the **stack**.  
 The runtime sets `DS=DGROUP`, so every global is just `[DS:offset]`.  
 Two things matter for us: because `SS=DS= DGROUP`, the buffer, the globals, and the stack all share one segment (so an overflow walks right through them).  
 While **offsets** inside `DGROUP` are fixed, the DGROUP **segment value** is `load_base + constant`, so it shifts with the DOS memory layout.  
