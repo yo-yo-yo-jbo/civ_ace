@@ -1,6 +1,10 @@
 # Sid Meier's Civilization Arbitrary Code Execution
 [Sid Meier's Civilization (1991)](https://en.wikipedia.org/wiki/Civilization_(video_game)) is one of my favorite old-timey games.  
 It is one of the first strategy games I have ever played, and I literally spent hours designing roads between cities, researching technology, building world wonders and so on.  
+It looks something like that (courtesy of [its Wikipedia page](https://en.wikipedia.org/wiki/Civilization_(video_game))):  
+![Civilization (Amiga version)](CivilizationAmigaAGA.png)
+
+
 As I grew up (mind you, I was but a mere child!) I realized the game's savefiles could be edited, and I have a vivid memory of trying to edit savefiles and having weird consequences.  
 After more than 30 years, I've decided to take a day and see if I can get arbitrary code execution in the game, and I'd like to share that with you!
 
