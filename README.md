@@ -16,11 +16,12 @@ My version of the game (which I downloaded from [an amazing old-timey Israeli si
 | CIV.EXE      | 304,512 bytes | 0598509dd378ea71db224e420ac70217 |
 | ORIGINAL.EXE | 304,512 bytes | 8c0960a9470c8183fdd88c5810f1f243 |
 
-Both are MS‑DOS MZ executables built with the Microsoft C runtime. They differ in **exactly ten bytes**, all at file offset `0x11D9E`:
+Both are MS‑DOS MZ executables built with the Microsoft C runtime. They differ in **exactly ten bytes**, 8 of them are at file offset `0x11D9E`:
 
 ```
-CIV.EXE      : 8b 1e ca 64  d1 e3  b8 ff 77  89 87 f6 c0  90        9a 6a 02 a7 01
-ORIGINAL.EXE : 8b 1e ca 64  d1 e3  8b 86 1c ff  29 87 f6 c0         9a 6a 02 a7 01
+CIV.EXE      : 8b 1e ca 64 d1 e3 b8 ff 77 89 87 f6 c0 90 9a 6a 02 a7 01
+ORIGINAL.EXE : 8b 1e ca 64 d1 e3 8b 86 1c ff 29 87 f6 c0 9a 6a 02 a7 01
+                                 ^^^^^^^^^^^^^^^^^^^^^^^
 ```
 
 Disassembled (16‑bit), this is the routine that charges the current player money:
@@ -257,7 +258,8 @@ The "aggression" from the legend is the `Mood` field. Here is Gandhi's record, d
 ff ff                               ; Mood = -1
 ff ff                               ; Policy = -1
 00 00                               ; Ideology
-1f 00 11 00
+1f 00                               ; Short tune
+11 00                               ; Long tune
 ```
 
 As you can see:
@@ -291,8 +293,24 @@ Nations[i].Mood = RNG.Next(3) - 1;   // re-randomized to -1 / 0 / +1
 ```
 
 Every other reference is a read feeding an equality test (`== 1`, `== -1`) to pick a mood string or steer AI attitude.  
-No government path decrements it, there is no accumulating aggression counter, and there is nothing to overflow.
-At this point, I really conclude the legend of Nuclear Gandhi is a myth.
+No government path decrements it, there is no accumulating aggression counter, and there is nothing to overflow.  
+The same thing happens in the `CIV.EXE` version - there is only one write (looks like `mov [si+0x1512], ax`) which is derived from a similar random procedure:
+
+```asm
+0077d5:  b8 3a 00        mov   ax, 0x3a                ; AX = 58 = size of one leader record
+0077d8:  f7 6e c6        imul  word ptr [bp-0x3a]      ; DX:AX = 58 * [bp-0x3a]   (nation index * 58)
+0077db:  8b f0           mov   si, ax                  ; SI = byte offset of this nation's record
+
+; Mood:
+0077dd:  b8 03 00        mov   ax, 3                   ; prepare argument for rand(3)
+0077e0:  50              push  ax                      ; ditto
+0077e1:  9a 5b 00 de 2d  lcall 0x2dde:0x5b             ; rand(3) invocation
+0077e6:  83 c4 02        add   sp, 2                   ; pop the argument (cdecl cleanup)
+0077e9:  48              dec   ax                      ; AX = rand(3) - 1, which means it'd be either -1, 0 or 1
+0077ea:  89 84 12 15     mov   [si+0x1512], ax         ; Nations[i].Mood = rand(3) - 1
+```
+
+At this point, I really conclude the legend of Nuclear Gandhi is a fun idea, but ultimately a myth.
 
 ## Summary
 This was a very fun weekend project for me, similar to what I've previously done with [Dangerous Dave](https://github.com/yo-yo-yo-jbo/dangerous_dave).  
