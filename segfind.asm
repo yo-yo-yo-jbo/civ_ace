@@ -56,6 +56,7 @@ org 0x100
 ;  Data "section"                                                           ;
 ;                                                                           ;
 ; ---------------------------------------------------------------------------
-msg     db 13,10,'DGROUP = 0x'                      ; Message header
+penx    db 0
+msg     db 13, 10, 'DGROUP = 0x'                    ; Message header
 hexbuf  db '0000'                                   ; Hexadecimal buffer
-        db 13,10,$                                  ; Message footer
+        db 13, 10, '$'                              ; Message footer
