@@ -318,4 +318,4 @@ I might start working more seriously as a hobby on modding or hacking old DOS ga
 
 Stay tuned!
 
-Jonathan Bar Or
+Jonathan Bar Or (https://jonathanbaror.com)
